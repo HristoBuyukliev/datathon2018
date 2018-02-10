@@ -2,7 +2,7 @@ import collections
 import operator
 from time import time
 
-from graphData import read_data
+from data import read_data
 
 
 def main(data, fp):
@@ -11,8 +11,8 @@ def main(data, fp):
     outnodes = collections.defaultdict(lambda: set())
     innodes = collections.defaultdict(lambda: set())
     for i, r in data.iterrows():
-        user_from = r['Subscriber_A']
-        user_to = r['Subsciber_B']
+        user_from = i[0]
+        user_to = i[1]
         outnodes[user_from].add(user_to)
         innodes[user_to].add(user_from)
         seen.add(user_from)
