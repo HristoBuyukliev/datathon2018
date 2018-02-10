@@ -15,3 +15,7 @@ def read_data():
     df['strength'] = df['Label'].map(lambda x: strength_remap[x])
     combined = df.groupby(by=['Subscriber_A',"Subsciber_B"]).sum()
     return combined
+
+
+def read_g5():
+    return pd.read_csv('/mnt/8C24EDC524EDB1FE/data/sna/Node_5_Bad_nodes.csv')
