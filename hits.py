@@ -1,7 +1,7 @@
 import collections
 import operator
 from time import time
-
+from link import Link
 from data import read_data
 
 
@@ -10,15 +10,16 @@ def normalize(values:dict):
     normalization_value = sum(x**2 for x in values.values()) ** 0.5
     return {key: value/ normalization_value for (key,value) in values.items()}
 
-def main(data, fp):
+def main(data, fp, use_weights =False):
     start = time()
     seen = set()
     outnodes = collections.defaultdict(lambda: set())
-    innodes = collections.defaultdict(lambda: set())
+    innodes = collections.defaultdict(lambda: set()) # only use for the stats at the end. Do not use it in the algorithm
     for i, r in data.iterrows():
         user_from = i[0]
         user_to = i[1]
-        outnodes[user_from].add(user_to)
+        l = Link(user_from, user_to, r['strength'])
+        outnodes[user_from].add(l)
         innodes[user_to].add(user_from)
         seen.add(user_from)
         seen.add(user_to)
@@ -30,9 +31,13 @@ def main(data, fp):
         newhubs = collections.defaultdict(lambda: 0)
         newauthorities = collections.defaultdict(lambda: 0)
         for vertex in seen:
-            for auth in outnodes[vertex]:
-                newhubs[vertex] += oldauthorities[auth]
-                newauthorities[auth] += oldhubs[vertex]
+            for link in outnodes[vertex]:
+                if use_weights:
+                    newhubs[vertex] += oldauthorities[link.target] * min(link.strength, 1)
+                    newauthorities[link.target] += oldhubs[vertex] * min(link.strength, 1)
+                else:
+                    newhubs[vertex] += oldauthorities[link.target]
+                    newauthorities[link.target] += oldhubs[vertex]
         newhubs = normalize(newhubs)
         newauthorities = normalize(newauthorities)
         delta = sum([abs(newhubs[t] - oldhubs[t]) for t in newhubs])
@@ -64,4 +69,4 @@ def main(data, fp):
 
 graphData = read_data()
 
-main(graphData, '404')
+main(graphData, '404-weighted', True)
