@@ -1,7 +1,8 @@
 import collections
 import operator
 from time import time
-import pandas as pd
+
+from graphData import read_data
 
 
 def main(data, fp):
@@ -64,10 +65,6 @@ def main(data, fp):
     return time() - start
 
 
-def read_data():
-    return pd.read_csv('/mnt/8C24EDC524EDB1FE/data/sna/Datathon_2018_Dataset_Hashbyte_New.csv',sep=';')
+graphData = read_data()
 
-
-data = read_data()
-
-main(data, '404')
+main(graphData, '404')
