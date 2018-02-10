@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Telenor Social Network Not Found</title>
+    <style>
+        .links line {
+            stroke: #999;
+            stroke-opacity: 0.2;
+        }
+
+        .nodes circle {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+        .node text {
+          pointer-events: none;
+          font: 32px sans-serif;
+          color: white;
+      }
+      </style>
+      <script src ="bower_components/d3/d3.min.js"></script>
+      <script src ="js/graph.js"></script>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+<body>
+    <center>
+        <h1>Telenor Social Network Not Found</h1>
+
+    </center>
+    <div class="form-group row" style="padding-left:50px">
+         <div class="col-xs-3">
+        <input id="node_id" class="form-control" placeholder="Please input start node id">
+             </div>
+        <button type = "button" class="btn btn-success" onclick="requestGraph()" style="margin-left:15px"> Best Button </button>
+    </div>
+<center><svg width="1800" id="graph" height="1000"></svg></center>
+</body>
+</html>
