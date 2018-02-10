@@ -5,6 +5,11 @@ from time import time
 from data import read_data
 
 
+
+def normalize(values:dict):
+    normalization_value = sum(x**2 for x in values.values()) ** 0.5
+    return {key: value/ normalization_value for (key,value) in values.items()}
+
 def main(data, fp):
     start = time()
     seen = set()
@@ -22,22 +27,14 @@ def main(data, fp):
     oldauthorities = collections.defaultdict(lambda: (len(seen) ** -0.5))
 
     for i in range(100):
-        sumhubs = 0
-        sumauth = 0
         newhubs = collections.defaultdict(lambda: 0)
         newauthorities = collections.defaultdict(lambda: 0)
         for vertex in seen:
             for auth in outnodes[vertex]:
                 newhubs[vertex] += oldauthorities[auth]
-            sumhubs += newhubs[vertex] ** 2
-        for vertex in seen:
-            for hub in innodes[vertex]:
-                newauthorities[vertex] += oldhubs[hub]
-            sumauth += newauthorities[vertex] ** 2
-        sumhubs = sumhubs ** 0.5
-        sumauth = sumauth ** 0.5
-        newhubs = {t: newhubs[t] / sumhubs for t in newhubs}
-        newauthorities = {t: newauthorities[t] / sumauth for t in newauthorities}
+                newauthorities[auth] += oldhubs[vertex]
+        newhubs = normalize(newhubs)
+        newauthorities = normalize(newauthorities)
         delta = sum([abs(newhubs[t] - oldhubs[t]) for t in newhubs])
         print("Delta", delta)
         oldhubs = newhubs
@@ -49,7 +46,7 @@ def main(data, fp):
     with open('%s.hubs.txt' % fp, 'w') as out:
         for u_id, score in hubs:
             out.write("\t".join([str(round(score, 8)),
-                                 str(oldauthorities[u_id]),
+                                 str(oldauthorities.get(u_id, 0)),
                                  str(u_id),
                                  'Out degree  %i ' % len(outnodes[u_id]),
                                  'In degree %i users' % len(innodes[u_id])]) + "\n")
@@ -57,7 +54,7 @@ def main(data, fp):
     with open('%s.auth.txt' % fp, 'w') as out:
         for u_id, score in auth:
             out.write("\t".join([str(round(score, 8)),
-                                 str(oldhubs[u_id]),
+                                 str(oldhubs.get(u_id,0)),
                                  str(u_id),
                                  'Responded to %i users' % len(outnodes[u_id]),
                                  'Got responses from %i users' % len(innodes[u_id])]) + "\n")
