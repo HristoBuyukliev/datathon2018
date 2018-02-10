@@ -4,30 +4,23 @@ from time import time
 import pandas as pd
 
 
-def main(fp):
+def main(data, fp):
     start = time()
     seen = set()
-    outnodes = collections.defaultdict(lambda: [])
-    innodes = collections.defaultdict(lambda: [])
-    usernames ={}
-    with open(fp) as lines:
-        for line in lines:
-            stuff = line.split("\t")
-            user_from = stuff[0]
-            user_name = stuff[1].strip()
-            usernames[user_from] = user_name
-            users_to = set()
-            if len(stuff)>3:
-                users_to = set([x.strip() for x in stuff[3].split(",") if x.strip() !=''])
-            outnodes[user_from] = users_to
-            seen.add(user_from)
-            for user in users_to:
-                seen.add(user)
-                innodes[user].append(user_from)
+    outnodes = collections.defaultdict(lambda: set())
+    innodes = collections.defaultdict(lambda: set())
+    for i, r in data.iterrows():
+        user_from = r['Subscriber_A']
+        user_to = r['Subsciber_B']
+        outnodes[user_from].add(user_to)
+        innodes[user_to].add(user_from)
+        seen.add(user_from)
+        seen.add(user_to)
+    print("Graph created")
     oldhubs = collections.defaultdict(lambda: (len(seen) ** -0.5))
     oldauthorities = collections.defaultdict(lambda: (len(seen) ** -0.5))
 
-    for i in range(150):
+    for i in range(100):
         sumhubs = 0
         sumauth = 0
         newhubs = collections.defaultdict(lambda: 0)
@@ -35,7 +28,6 @@ def main(fp):
         for vertex in seen:
             for auth in outnodes[vertex]:
                 newhubs[vertex] += oldauthorities[auth]
-
             sumhubs += newhubs[vertex] ** 2
         for vertex in seen:
             for hub in innodes[vertex]:
@@ -50,24 +42,22 @@ def main(fp):
         oldhubs = newhubs
         oldauthorities = newauthorities
 
-    auth = sorted(oldauthorities.items(), key=operator.itemgetter(1))
-    hubs = sorted(oldhubs.items(), key=operator.itemgetter(1))
+    auth = sorted(oldauthorities.items(), key=operator.itemgetter(1), reverse=True)
+    hubs = sorted(oldhubs.items(), key=operator.itemgetter(1), reverse=True)
 
     with open('%s.hubs.txt' % fp, 'w') as out:
         for u_id, score in hubs:
             out.write("\t".join([str(round(score, 8)),
                                  str(oldauthorities[u_id]),
                                  str(u_id),
-                                 usernames[u_id.strip()] if u_id.strip() in usernames else 'unknown',
-                                 'Responded to %i users' % len(outnodes[u_id]),
-                                 'Got responses from %i users' % len(innodes[u_id])]) + "\n")
+                                 'Out degree  %i ' % len(outnodes[u_id]),
+                                 'In degree %i users' % len(innodes[u_id])]) + "\n")
 
     with open('%s.auth.txt' % fp, 'w') as out:
         for u_id, score in auth:
             out.write("\t".join([str(round(score, 8)),
                                  str(oldhubs[u_id]),
                                  str(u_id),
-                                 usernames[u_id.strip()] if u_id.strip() in usernames else 'unknown',
                                  'Responded to %i users' % len(outnodes[u_id]),
                                  'Got responses from %i users' % len(innodes[u_id])]) + "\n")
     print(fp + " Complete")
@@ -75,4 +65,9 @@ def main(fp):
 
 
 def read_data():
-    return pd.read_csv('')
+    return pd.read_csv('/mnt/8C24EDC524EDB1FE/data/sna/Datathon_2018_Dataset_Hashbyte_New.csv',sep=';')
+
+
+data = read_data()
+
+main(data, '404')
