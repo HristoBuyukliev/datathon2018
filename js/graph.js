@@ -112,7 +112,7 @@ function showGraph(data, radius) {
           .on("end", dragended));
 
   node.append("image")
-      .attr("xlink:href", "img/telenor-logo.png")
+      .attr("xlink:href", function(d) { if (d.g5) { return "img/telenor-logo-bad.png"} else { return "img/telenor-logo.png"}})
       .attr("x", -radius)
       .attr("y", -radius)
       .attr("width", 2 * radius)

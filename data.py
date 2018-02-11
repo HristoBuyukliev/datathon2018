@@ -19,3 +19,6 @@ def read_data():
 
 def read_g5():
     return pd.read_csv('/mnt/8C24EDC524EDB1FE/data/sna/Node_5_Bad_nodes.csv')
+
+def read_categories():
+    return pd.read_csv('/mnt/8C24EDC524EDB1FE/data/sna/Node_categories.csv',sep=";")

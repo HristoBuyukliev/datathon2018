@@ -1,12 +1,13 @@
 from flask import Flask
 from flask import request
-from data import read_data
+from data import read_data, read_g5
 from flask_cors import CORS
 
 import json
 
 graphData = read_data()
-
+g5 = read_g5()
+g5_ids = set(g5['HASH_ID'])
 app = Flask(__name__)
 CORS(app)
 
@@ -19,7 +20,9 @@ def hello():
     links = graphData.loc[node_id]
     nodes = [
         {"id": node_id,
-         "group": 1}
+         "group": 1,
+         'g5': node_id in g5_ids
+         }
     ]
     result_links = []
     for k, link in links.iterrows():
